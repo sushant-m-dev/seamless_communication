@@ -6,7 +6,7 @@ translator = Translator("seamlessM4T_medium", vocoder_name_or_card="vocoder_36la
 
 translated_text, wav, sr = translator.predict("Hey this is a test", "t2st", "eng", src_lang="eng")
 
-wav, sr = translator.synthesize_speech(<speech_units>, <tgt_lang>)
+wav, sr = translator.synthesize_speech("Hey this is a test", "eng")
 
 # Save the translated audio generation.
 torchaudio.save(
