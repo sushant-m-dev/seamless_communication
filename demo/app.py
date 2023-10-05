@@ -6,7 +6,7 @@
 
 from __future__ import annotations
 
-import gradio as gr
+#import gradio as gr
 import numpy as np
 import torch
 import torchaudio
@@ -339,9 +339,9 @@ def predict(
         max_length = int(MAX_INPUT_AUDIO_LENGTH * AUDIO_SAMPLE_RATE)
         if new_arr.shape[1] > max_length:
             new_arr = new_arr[:, :max_length]
-            gr.Warning(
-                f"Input audio is too long. Only the first {MAX_INPUT_AUDIO_LENGTH} seconds is used."
-            )
+            # gr.Warning(
+            #     f"Input audio is too long. Only the first {MAX_INPUT_AUDIO_LENGTH} seconds is used."
+            # )
         torchaudio.save(input_data, new_arr, sample_rate=int(AUDIO_SAMPLE_RATE))
     else:
         input_data = input_text
@@ -428,293 +428,296 @@ def process_asr_example(
     )
 
 
-def update_audio_ui(audio_source: str) -> tuple[dict, dict]:
-    mic = audio_source == "microphone"
-    return (
-        gr.update(visible=mic, value=None),  # input_audio_mic
-        gr.update(visible=not mic, value=None),  # input_audio_file
-    )
+# def update_audio_ui(audio_source: str) -> tuple[dict, dict]:
+#     mic = audio_source == "microphone"
+#     return (
+#         gr.update(visible=mic, value=None),  # input_audio_mic
+#         gr.update(visible=not mic, value=None),  # input_audio_file
+#     )
 
 
-def update_input_ui(task_name: str) -> tuple[dict, dict, dict, dict]:
-    task_name = task_name.split()[0]
-    if task_name == "S2ST":
-        return (
-            gr.update(visible=True),  # audio_box
-            gr.update(visible=False),  # input_text
-            gr.update(visible=False),  # source_language
-            gr.update(
-                visible=True,
-                choices=S2ST_TARGET_LANGUAGE_NAMES,
-                value=DEFAULT_TARGET_LANGUAGE,
-            ),  # target_language
-        )
-    elif task_name == "S2TT":
-        return (
-            gr.update(visible=True),  # audio_box
-            gr.update(visible=False),  # input_text
-            gr.update(visible=False),  # source_language
-            gr.update(
-                visible=True,
-                choices=S2TT_TARGET_LANGUAGE_NAMES,
-                value=DEFAULT_TARGET_LANGUAGE,
-            ),  # target_language
-        )
-    elif task_name == "T2ST":
-        return (
-            gr.update(visible=False),  # audio_box
-            gr.update(visible=True),  # input_text
-            gr.update(visible=True),  # source_language
-            gr.update(
-                visible=True,
-                choices=S2ST_TARGET_LANGUAGE_NAMES,
-                value=DEFAULT_TARGET_LANGUAGE,
-            ),  # target_language
-        )
-    elif task_name == "T2TT":
-        return (
-            gr.update(visible=False),  # audio_box
-            gr.update(visible=True),  # input_text
-            gr.update(visible=True),  # source_language
-            gr.update(
-                visible=True,
-                choices=T2TT_TARGET_LANGUAGE_NAMES,
-                value=DEFAULT_TARGET_LANGUAGE,
-            ),  # target_language
-        )
-    elif task_name == "ASR":
-        return (
-            gr.update(visible=True),  # audio_box
-            gr.update(visible=False),  # input_text
-            gr.update(visible=False),  # source_language
-            gr.update(
-                visible=True,
-                choices=S2TT_TARGET_LANGUAGE_NAMES,
-                value=DEFAULT_TARGET_LANGUAGE,
-            ),  # target_language
-        )
-    else:
-        raise ValueError(f"Unknown task: {task_name}")
+# def update_input_ui(task_name: str) -> tuple[dict, dict, dict, dict]:
+#     task_name = task_name.split()[0]
+#     if task_name == "S2ST":
+#         return (
+#             gr.update(visible=True),  # audio_box
+#             gr.update(visible=False),  # input_text
+#             gr.update(visible=False),  # source_language
+#             gr.update(
+#                 visible=True,
+#                 choices=S2ST_TARGET_LANGUAGE_NAMES,
+#                 value=DEFAULT_TARGET_LANGUAGE,
+#             ),  # target_language
+#         )
+#     elif task_name == "S2TT":
+#         return (
+#             gr.update(visible=True),  # audio_box
+#             gr.update(visible=False),  # input_text
+#             gr.update(visible=False),  # source_language
+#             gr.update(
+#                 visible=True,
+#                 choices=S2TT_TARGET_LANGUAGE_NAMES,
+#                 value=DEFAULT_TARGET_LANGUAGE,
+#             ),  # target_language
+#         )
+#     elif task_name == "T2ST":
+#         return (
+#             gr.update(visible=False),  # audio_box
+#             gr.update(visible=True),  # input_text
+#             gr.update(visible=True),  # source_language
+#             gr.update(
+#                 visible=True,
+#                 choices=S2ST_TARGET_LANGUAGE_NAMES,
+#                 value=DEFAULT_TARGET_LANGUAGE,
+#             ),  # target_language
+#         )
+#     elif task_name == "T2TT":
+#         return (
+#             gr.update(visible=False),  # audio_box
+#             gr.update(visible=True),  # input_text
+#             gr.update(visible=True),  # source_language
+#             gr.update(
+#                 visible=True,
+#                 choices=T2TT_TARGET_LANGUAGE_NAMES,
+#                 value=DEFAULT_TARGET_LANGUAGE,
+#             ),  # target_language
+#         )
+#     elif task_name == "ASR":
+#         return (
+#             gr.update(visible=True),  # audio_box
+#             gr.update(visible=False),  # input_text
+#             gr.update(visible=False),  # source_language
+#             gr.update(
+#                 visible=True,
+#                 choices=S2TT_TARGET_LANGUAGE_NAMES,
+#                 value=DEFAULT_TARGET_LANGUAGE,
+#             ),  # target_language
+#         )
+#     else:
+#         raise ValueError(f"Unknown task: {task_name}")
 
 
-def update_output_ui(task_name: str) -> tuple[dict, dict]:
-    task_name = task_name.split()[0]
-    if task_name in ["S2ST", "T2ST"]:
-        return (
-            gr.update(visible=True, value=None),  # output_audio
-            gr.update(value=None),  # output_text
-        )
-    elif task_name in ["S2TT", "T2TT", "ASR"]:
-        return (
-            gr.update(visible=False, value=None),  # output_audio
-            gr.update(value=None),  # output_text
-        )
-    else:
-        raise ValueError(f"Unknown task: {task_name}")
+# def update_output_ui(task_name: str) -> tuple[dict, dict]:
+#     task_name = task_name.split()[0]
+#     if task_name in ["S2ST", "T2ST"]:
+#         return (
+#             gr.update(visible=True, value=None),  # output_audio
+#             gr.update(value=None),  # output_text
+#         )
+#     elif task_name in ["S2TT", "T2TT", "ASR"]:
+#         return (
+#             gr.update(visible=False, value=None),  # output_audio
+#             gr.update(value=None),  # output_text
+#         )
+#     else:
+#         raise ValueError(f"Unknown task: {task_name}")
 
 
-def update_example_ui(task_name: str) -> tuple[dict, dict, dict, dict, dict]:
-    task_name = task_name.split()[0]
-    return (
-        gr.update(visible=task_name == "S2ST"),  # s2st_example_row
-        gr.update(visible=task_name == "S2TT"),  # s2tt_example_row
-        gr.update(visible=task_name == "T2ST"),  # t2st_example_row
-        gr.update(visible=task_name == "T2TT"),  # t2tt_example_row
-        gr.update(visible=task_name == "ASR"),  # asr_example_row
-    )
+# def update_example_ui(task_name: str) -> tuple[dict, dict, dict, dict, dict]:
+#     task_name = task_name.split()[0]
+#     return (
+#         gr.update(visible=task_name == "S2ST"),  # s2st_example_row
+#         gr.update(visible=task_name == "S2TT"),  # s2tt_example_row
+#         gr.update(visible=task_name == "T2ST"),  # t2st_example_row
+#         gr.update(visible=task_name == "T2TT"),  # t2tt_example_row
+#         gr.update(visible=task_name == "ASR"),  # asr_example_row
+#     )
 
 
-css = """
-h1 {
-  text-align: center;
-}
+# css = """
+# h1 {
+#   text-align: center;
+# }
 
-.contain {
-  max-width: 730px;
-  margin: auto;
-  padding-top: 1.5rem;
-}
-"""
+# .contain {
+#   max-width: 730px;
+#   margin: auto;
+#   padding-top: 1.5rem;
+# }
+# """
 
-with gr.Blocks(css=css) as demo:
-    gr.Markdown(DESCRIPTION)
-    with gr.Group():
-        task_name = gr.Dropdown(
-            label="Task",
-            choices=TASK_NAMES,
-            value=TASK_NAMES[0],
-        )
-        with gr.Row():
-            source_language = gr.Dropdown(
-                label="Source language",
-                choices=TEXT_SOURCE_LANGUAGE_NAMES,
-                value="English",
-                visible=False,
-            )
-            target_language = gr.Dropdown(
-                label="Target language",
-                choices=S2ST_TARGET_LANGUAGE_NAMES,
-                value=DEFAULT_TARGET_LANGUAGE,
-            )
-        with gr.Row() as audio_box:
-            audio_source = gr.Radio(
-                label="Audio source",
-                choices=["file", "microphone"],
-                value="file",
-            )
-            input_audio_mic = gr.Audio(
-                label="Input speech",
-                type="filepath",
-                source="microphone",
-                visible=False,
-            )
-            input_audio_file = gr.Audio(
-                label="Input speech",
-                type="filepath",
-                source="upload",
-                visible=True,
-            )
-        input_text = gr.Textbox(label="Input text", visible=False)
-        btn = gr.Button("Translate")
-        with gr.Column():
-            output_audio = gr.Audio(
-                label="Translated speech",
-                autoplay=False,
-                streaming=False,
-                type="numpy",
-            )
-            output_text = gr.Textbox(label="Translated text")
+# with gr.Blocks(css=css) as demo:
+#     gr.Markdown(DESCRIPTION)
+#     with gr.Group():
+#         task_name = gr.Dropdown(
+#             label="Task",
+#             choices=TASK_NAMES,
+#             value=TASK_NAMES[0],
+#         )
+#         with gr.Row():
+#             source_language = gr.Dropdown(
+#                 label="Source language",
+#                 choices=TEXT_SOURCE_LANGUAGE_NAMES,
+#                 value="English",
+#                 visible=False,
+#             )
+#             target_language = gr.Dropdown(
+#                 label="Target language",
+#                 choices=S2ST_TARGET_LANGUAGE_NAMES,
+#                 value=DEFAULT_TARGET_LANGUAGE,
+#             )
+#         with gr.Row() as audio_box:
+#             audio_source = gr.Radio(
+#                 label="Audio source",
+#                 choices=["file", "microphone"],
+#                 value="file",
+#             )
+#             input_audio_mic = gr.Audio(
+#                 label="Input speech",
+#                 type="filepath",
+#                 source="microphone",
+#                 visible=False,
+#             )
+#             input_audio_file = gr.Audio(
+#                 label="Input speech",
+#                 type="filepath",
+#                 source="upload",
+#                 visible=True,
+#             )
+#         input_text = gr.Textbox(label="Input text", visible=False)
+#         btn = gr.Button("Translate")
+#         with gr.Column():
+#             output_audio = gr.Audio(
+#                 label="Translated speech",
+#                 autoplay=False,
+#                 streaming=False,
+#                 type="numpy",
+#             )
+#             output_text = gr.Textbox(label="Translated text")
 
-    with gr.Row(visible=True) as s2st_example_row:
-        s2st_examples = gr.Examples(
-            examples=[
-                ["assets/sample_input.mp3", "French"],
-                ["assets/sample_input.mp3", "Mandarin Chinese"],
-                ["assets/sample_input_2.mp3", "Hindi"],
-                ["assets/sample_input_2.mp3", "Spanish"],
-            ],
-            inputs=[input_audio_file, target_language],
-            outputs=[output_audio, output_text],
-            fn=process_s2st_example,
-        )
-    with gr.Row(visible=False) as s2tt_example_row:
-        s2tt_examples = gr.Examples(
-            examples=[
-                ["assets/sample_input.mp3", "French"],
-                ["assets/sample_input.mp3", "Mandarin Chinese"],
-                ["assets/sample_input_2.mp3", "Hindi"],
-                ["assets/sample_input_2.mp3", "Spanish"],
-            ],
-            inputs=[input_audio_file, target_language],
-            outputs=[output_audio, output_text],
-            fn=process_s2tt_example,
-        )
-    with gr.Row(visible=False) as t2st_example_row:
-        t2st_examples = gr.Examples(
-            examples=[
-                ["My favorite animal is the elephant.", "English", "French"],
-                ["My favorite animal is the elephant.", "English", "Mandarin Chinese"],
-                [
-                    "Meta AI's Seamless M4T model is democratising spoken communication across language barriers",
-                    "English",
-                    "Hindi",
-                ],
-                [
-                    "Meta AI's Seamless M4T model is democratising spoken communication across language barriers",
-                    "English",
-                    "Spanish",
-                ],
-            ],
-            inputs=[input_text, source_language, target_language],
-            outputs=[output_audio, output_text],
-            fn=process_t2st_example,
-        )
-    with gr.Row(visible=False) as t2tt_example_row:
-        t2tt_examples = gr.Examples(
-            examples=[
-                ["My favorite animal is the elephant.", "English", "French"],
-                ["My favorite animal is the elephant.", "English", "Mandarin Chinese"],
-                [
-                    "Meta AI's Seamless M4T model is democratising spoken communication across language barriers",
-                    "English",
-                    "Hindi",
-                ],
-                [
-                    "Meta AI's Seamless M4T model is democratising spoken communication across language barriers",
-                    "English",
-                    "Spanish",
-                ],
-            ],
-            inputs=[input_text, source_language, target_language],
-            outputs=[output_audio, output_text],
-            fn=process_t2tt_example,
-        )
-    with gr.Row(visible=False) as asr_example_row:
-        asr_examples = gr.Examples(
-            examples=[
-                ["assets/sample_input.mp3", "English"],
-                ["assets/sample_input_2.mp3", "English"],
-            ],
-            inputs=[input_audio_file, target_language],
-            outputs=[output_audio, output_text],
-            fn=process_asr_example,
-        )
+#     with gr.Row(visible=True) as s2st_example_row:
+#         s2st_examples = gr.Examples(
+#             examples=[
+#                 ["assets/sample_input.mp3", "French"],
+#                 ["assets/sample_input.mp3", "Mandarin Chinese"],
+#                 ["assets/sample_input_2.mp3", "Hindi"],
+#                 ["assets/sample_input_2.mp3", "Spanish"],
+#             ],
+#             inputs=[input_audio_file, target_language],
+#             outputs=[output_audio, output_text],
+#             fn=process_s2st_example,
+#         )
+#     with gr.Row(visible=False) as s2tt_example_row:
+#         s2tt_examples = gr.Examples(
+#             examples=[
+#                 ["assets/sample_input.mp3", "French"],
+#                 ["assets/sample_input.mp3", "Mandarin Chinese"],
+#                 ["assets/sample_input_2.mp3", "Hindi"],
+#                 ["assets/sample_input_2.mp3", "Spanish"],
+#             ],
+#             inputs=[input_audio_file, target_language],
+#             outputs=[output_audio, output_text],
+#             fn=process_s2tt_example,
+#         )
+#     with gr.Row(visible=False) as t2st_example_row:
+#         t2st_examples = gr.Examples(
+#             examples=[
+#                 ["My favorite animal is the elephant.", "English", "French"],
+#                 ["My favorite animal is the elephant.", "English", "Mandarin Chinese"],
+#                 [
+#                     "Meta AI's Seamless M4T model is democratising spoken communication across language barriers",
+#                     "English",
+#                     "Hindi",
+#                 ],
+#                 [
+#                     "Meta AI's Seamless M4T model is democratising spoken communication across language barriers",
+#                     "English",
+#                     "Spanish",
+#                 ],
+#             ],
+#             inputs=[input_text, source_language, target_language],
+#             outputs=[output_audio, output_text],
+#             fn=process_t2st_example,
+#         )
+#     with gr.Row(visible=False) as t2tt_example_row:
+#         t2tt_examples = gr.Examples(
+#             examples=[
+#                 ["My favorite animal is the elephant.", "English", "French"],
+#                 ["My favorite animal is the elephant.", "English", "Mandarin Chinese"],
+#                 [
+#                     "Meta AI's Seamless M4T model is democratising spoken communication across language barriers",
+#                     "English",
+#                     "Hindi",
+#                 ],
+#                 [
+#                     "Meta AI's Seamless M4T model is democratising spoken communication across language barriers",
+#                     "English",
+#                     "Spanish",
+#                 ],
+#             ],
+#             inputs=[input_text, source_language, target_language],
+#             outputs=[output_audio, output_text],
+#             fn=process_t2tt_example,
+#         )
+#     with gr.Row(visible=False) as asr_example_row:
+#         asr_examples = gr.Examples(
+#             examples=[
+#                 ["assets/sample_input.mp3", "English"],
+#                 ["assets/sample_input_2.mp3", "English"],
+#             ],
+#             inputs=[input_audio_file, target_language],
+#             outputs=[output_audio, output_text],
+#             fn=process_asr_example,
+#         )
 
-    audio_source.change(
-        fn=update_audio_ui,
-        inputs=audio_source,
-        outputs=[
-            input_audio_mic,
-            input_audio_file,
-        ],
-        queue=False,
-        api_name=False,
-    )
-    task_name.change(
-        fn=update_input_ui,
-        inputs=task_name,
-        outputs=[
-            audio_box,
-            input_text,
-            source_language,
-            target_language,
-        ],
-        queue=False,
-        api_name=False,
-    ).then(
-        fn=update_output_ui,
-        inputs=task_name,
-        outputs=[output_audio, output_text],
-        queue=False,
-        api_name=False,
-    ).then(
-        fn=update_example_ui,
-        inputs=task_name,
-        outputs=[
-            s2st_example_row,
-            s2tt_example_row,
-            t2st_example_row,
-            t2tt_example_row,
-            asr_example_row,
-        ],
-        queue=False,
-        api_name=False,
-    )
+#     audio_source.change(
+#         fn=update_audio_ui,
+#         inputs=audio_source,
+#         outputs=[
+#             input_audio_mic,
+#             input_audio_file,
+#         ],
+#         queue=False,
+#         api_name=False,
+#     )
+#     task_name.change(
+#         fn=update_input_ui,
+#         inputs=task_name,
+#         outputs=[
+#             audio_box,
+#             input_text,
+#             source_language,
+#             target_language,
+#         ],
+#         queue=False,
+#         api_name=False,
+#     ).then(
+#         fn=update_output_ui,
+#         inputs=task_name,
+#         outputs=[output_audio, output_text],
+#         queue=False,
+#         api_name=False,
+#     ).then(
+#         fn=update_example_ui,
+#         inputs=task_name,
+#         outputs=[
+#             s2st_example_row,
+#             s2tt_example_row,
+#             t2st_example_row,
+#             t2tt_example_row,
+#             asr_example_row,
+#         ],
+#         queue=False,
+#         api_name=False,
+#     )
 
-    btn.click(
-        fn=predict,
-        inputs=[
-            task_name,
-            audio_source,
-            input_audio_mic,
-            input_audio_file,
-            input_text,
-            source_language,
-            target_language,
-        ],
-        outputs=[output_audio, output_text],
-        api_name="run",
-    )
+#     btn.click(
+#         fn=predict,
+#         inputs=[
+#             task_name,
+#             audio_source,
+#             input_audio_mic,
+#             input_audio_file,
+#             input_text,
+#             source_language,
+#             target_language,
+#         ],
+#         outputs=[output_audio, output_text],
+#         api_name="run",
+#     )
 
 if __name__ == "__main__":
-    demo.queue().launch()
+    print("Entering t2s")
+    audio_wave = process_t2st_example("Test speech" , "eng" , "eng")
+    print(audio_wave)
+
