@@ -11,7 +11,7 @@ translated_text, wav, sr = translator.predict("Hey this is a test", "t2st", "eng
 
 # Save the translated audio generation.
 torchaudio.save(
-    '/root/sushant/seamless_m4t/seamless_communication/demo',
+    '/root/sushant/seamless_m4t/seamless_communication/demo/output.wav',
     wav[0].cpu(),
     sample_rate=sr,
 )
