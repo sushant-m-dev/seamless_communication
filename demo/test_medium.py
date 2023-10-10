@@ -2,6 +2,7 @@ import torch
 from seamless_communication.models.inference import Translator
 import torchaudio
 import logging
+import time
 
 import socket
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -14,7 +15,16 @@ translator = Translator("seamlessM4T_medium", vocoder_name_or_card="vocoder_36la
 
 def text_to_speech(text):
     with torch.no_grad():
+        start_time = time.time()
         translated_text, wav, sr = translator.predict(text, "t2st", "eng", src_lang="eng")
+        end_time = time.time()
+
+        audio_duration = len(wav[0]) / sr
+
+    # Calculate RTF (Real-Time Factor)
+        rtf = audio_duration / (end_time - start_time)
+        logging.warning("time \n" , end_time - start_time)
+        logging.warning("rtf is: ", rtf)
 
     #wav, sr = translator.synthesize_speech("Hey this is a test", "eng") -> Not sure what this line does
 
