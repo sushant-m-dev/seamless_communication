@@ -11,7 +11,7 @@ def send_string_and_file(data, output_file):
 # Generate a list of 100 strings with longer text to send
 strings_to_send = []
 for i in range(1, 101):
-    strings_to_send.append(f"This is string {i}. It contains more words and characters.")
+    strings_to_send.append(f"This is string {i}. It contains more words and characters")
 
 # Create a ThreadPoolExecutor with a maximum of 10 worker threads
 with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
