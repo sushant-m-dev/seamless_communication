@@ -38,7 +38,7 @@ def text_to_speech(text, output_file):
 def process_request(data):
     action, text = data.split(":")
     if action.strip() == "tts":
-        text_to_speech(text.strip(), f'/root/sushant/seamless_m4t/seamless_communication/demo/output_{text}.wav')
+        text_to_speech(text, f'/root/sushant/seamless_m4t/seamless_communication/demo/output_{text}.wav')
 
 
 # Create a ThreadPoolExecutor with a maximum of 10 worker threads
