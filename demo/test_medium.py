@@ -17,7 +17,7 @@ s.listen(1)
 # Initialize a Translator object with a multitask model, vocoder on the GPU.
 translator = Translator("seamlessM4T_medium", vocoder_name_or_card="vocoder_36langs", device=torch.device("cuda:0"))
 
-def text_to_speech(text):
+def text_to_speech(text, output_file):
     with torch.no_grad():
         start_time = time.time()
         translated_text, wav, sr = translator.predict(text, "t2st", "eng", src_lang="eng")
@@ -27,13 +27,13 @@ def text_to_speech(text):
 
     # Calculate RTF (Real-Time Factor)
         rtf = audio_duration / (end_time - start_time)
-        logging.info("RTF for '{}': {:.2f}".format(translated_text, rtf))
+        logging.info("Time for '{}' is : {:.2f}".format(translated_text, end_time-start_time))
 
     #wav, sr = translator.synthesize_speech("Hey this is a test", "eng") -> Not sure what this line does
 
     # Save the translated audio generation.
     torchaudio.save(
-        '/root/sushant/seamless_m4t/seamless_communication/demo/output.wav',
+        output_file,
         wav[0].cpu(),
         sample_rate=sr,
     )
@@ -48,7 +48,12 @@ while True:
     conn.close()
 
     if action.strip() == "tts":
-        text_to_speech(text.strip())
+        # Loop over multiple strings
+        text_list = text.split(";")  # Assuming strings are separated by semicolon
+        for i, text_item in enumerate(text_list):
+            output_file = f'/root/sushant/seamless_m4t/seamless_communication/demo/output_{i}.wav'
+            text_to_speech(text_item, output_file)
+        #text_to_speech(text.strip())
     else:
         logging.warning("No action / text provided or recognized")
 
