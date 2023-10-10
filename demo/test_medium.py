@@ -1,9 +1,6 @@
-import torch
+import torch , torchaudio , logging , time , sys 
 from seamless_communication.models.inference import Translator
-import torchaudio
-import logging
-import time
-import sys
+import concurrent.futures
 
 # Configure logging to write log messages to stdout
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
@@ -38,26 +35,46 @@ def text_to_speech(text, output_file):
         sample_rate=sr,
     )
 
-
-while True:
-    conn, addr = s.accept()
-    data = conn.recv(1024)
-    encoding = 'utf-8'
-    data = str(data, encoding)
-    action , text = data.split(":")
-    conn.close()
-    logging.info("action is {}".format(action))
-    logging.info("text is {}".format(text))
+def process_request(data):
+    action, text = data.split(":")
     if action.strip() == "tts":
-        # Loop over multiple strings
-        text_list = text.split(";")  # Assuming strings are separated by semicolon
-        for i, text_item in enumerate(text_list):
-            logging.info("We are inside the for loop at index {}".format(i))
-            output_file = f'/root/sushant/seamless_m4t/seamless_communication/demo/output_{i}.wav'
-            text_to_speech(text_item, output_file)
-        #text_to_speech(text.strip())
-    else:
-        logging.warning("No action / text provided or recognized")
+        text_to_speech(text.strip(), f'/root/sushant/seamless_m4t/seamless_communication/demo/output_{text}.wav')
+
+
+# Create a ThreadPoolExecutor with a maximum of 10 worker threads
+with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+    while True:
+        conn, addr = s.accept()
+        data = conn.recv(1024)
+        encoding = 'utf-8'
+        data = str(data, encoding)
+        conn.close()
+
+        # Submit the request for processing in a separate thread
+        executor.submit(process_request, data)
+
+
+
+# for linear strings
+# while True:
+#     conn, addr = s.accept()
+#     data = conn.recv(1024)
+#     encoding = 'utf-8'
+#     data = str(data, encoding)
+#     action , text = data.split(":")
+#     conn.close()
+#     logging.info("action is {}".format(action))
+#     logging.info("text is {}".format(text))
+#     if action.strip() == "tts":
+#         # Loop over multiple strings
+#         text_list = text.split(";")  # Assuming strings are separated by semicolon
+#         for i, text_item in enumerate(text_list):
+#             logging.info("We are inside the for loop at index {}".format(i))
+#             output_file = f'/root/sushant/seamless_m4t/seamless_communication/demo/output_{i}.wav'
+#             text_to_speech(text_item, output_file)
+#         #text_to_speech(text.strip())
+#     else:
+#         logging.warning("No action / text provided or recognized")
 
 
 
