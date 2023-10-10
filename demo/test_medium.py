@@ -46,11 +46,13 @@ while True:
     data = str(data, encoding)
     action , text = data.split(":")
     conn.close()
-
+    logging.info("action is {}".format(action))
+    logging.info("text is {}".format(text))
     if action.strip() == "tts":
         # Loop over multiple strings
         text_list = text.split(";")  # Assuming strings are separated by semicolon
         for i, text_item in enumerate(text_list):
+            logging.info("We are inside the for loop at index {}".format(i))
             output_file = f'/root/sushant/seamless_m4t/seamless_communication/demo/output_{i}.wav'
             text_to_speech(text_item, output_file)
         #text_to_speech(text.strip())
