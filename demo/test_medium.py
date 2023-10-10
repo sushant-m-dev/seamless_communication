@@ -3,6 +3,10 @@ from seamless_communication.models.inference import Translator
 import torchaudio
 import logging
 import time
+import sys
+
+# Configure logging to write log messages to stdout
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 import socket
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
