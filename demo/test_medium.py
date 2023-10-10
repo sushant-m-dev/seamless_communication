@@ -23,8 +23,7 @@ def text_to_speech(text):
 
     # Calculate RTF (Real-Time Factor)
         rtf = audio_duration / (end_time - start_time)
-        logging.warning("time \n" , end_time - start_time)
-        logging.warning("rtf is: ", rtf)
+        logging.info("RTF for '{}': {:.2f}".format(translated_text, rtf))
 
     #wav, sr = translator.synthesize_speech("Hey this is a test", "eng") -> Not sure what this line does
 
